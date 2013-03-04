@@ -244,7 +244,7 @@ int main(int argc, char **argv) {
 	 *  Execute
 	 */
 	
-	omp_set_num_threads(N_threads);
+	//omp_set_num_threads(N_threads);
 	
 	// Get list of pixels in input file
 	vector<unsigned int> healpix_index;

@@ -730,10 +730,9 @@ TParallelAffineSampler<TParams, TLogger>::~TParallelAffineSampler() {
 
 template<class TParams, class TLogger>
 void TParallelAffineSampler<TParams, TLogger>::step(unsigned int N_steps, bool record_steps, double cycle, double p_replacement, double p_mixture, bool unbalanced) {
-	//omp_set_num_threads(N_samplers);
-	#pragma omp parallel firstprivate(record_steps, N_steps, cycle, p_replacement, p_mixture, unbalanced) num_threads(N_samplers)
+	#pragma omp parallel for firstprivate(record_steps, N_steps, cycle, p_replacement, p_mixture, unbalanced)
+	for(int thread_ID=0; thread_ID < N_samplers; thread_ID++)
 	{
-		unsigned int thread_ID = omp_get_thread_num();
 		double base_a = sampler[thread_ID]->get_scale();
 		for(unsigned int i=0; i<N_steps; i++) {
 			if(cycle > 1) {
@@ -788,9 +787,9 @@ void TParallelAffineSampler<TParams, TLogger>::calc_GR_transformed(std::vector<d
 		transf_stats[n] = new TStats(N);
 	}
 	
-	#pragma omp parallel num_threads(N_samplers)
+	#pragma omp parallel for
+	for(int n = 0; n < N_samplers; n++)
 	{
-		size_t n = omp_get_thread_num();
 		TStats& transf_comp_stat = *(transf_stats[n]);
 		TChain& chain = sampler[n]->get_chain();
 		size_t n_points = chain.get_length();
